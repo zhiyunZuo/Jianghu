@@ -3,139 +3,153 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-  <meta name="theme-color" content="#f4ecd8">
-  <title>江湖侠客成长模拟器</title>
+  <meta name="theme-color" content="#0b0f0e">
+  <title>江湖 · 侠客修行</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;700;900&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/style.css">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;500;700;900&family=Ma+Shan+Zheng&family=ZCOOL+XiaoWei&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css?v=3">
 </head>
-<body>
-  <!-- 宣纸纹理 -->
-  <div class="paper-texture"></div>
-  <div class="mountain-bg" id="mountainBg"></div>
-  <div class="particle-layer" id="particleLayer"></div>
-  <div class="weather-overlay" id="weatherOverlay"></div>
+<body data-identity="youxia" data-time="清晨" data-weather="mist">
+
+  <!-- ===== 2.5D 分层场景舞台（固定背景） ===== -->
+  <div id="bgStage" aria-hidden="true">
+    <div id="bgImage" class="bg-layer" data-depth="0.020"></div>      <!-- 远景 AI 水墨场景 -->
+    <div id="bgCloud" class="bg-layer" data-depth="0.045"></div>      <!-- 云海 / 雾气层 -->
+    <div id="bgGrade" class="bg-layer"></div>                         <!-- 时间 / 季节 色彩分级 -->
+    <div id="bgVignette" class="bg-layer"></div>                      <!-- 暗角 + 颗粒 -->
+    <div id="mistLayer" class="bg-layer" data-depth="0.070"></div>    <!-- 飘移薄雾 -->
+    <div id="particleLayer"></div>                                     <!-- 雨雪 / 花瓣 / 萤火 -->
+    <div id="bgGrain" class="bg-layer"></div>
+  </div>
 
   <div id="app">
 
-    <!-- ========== 入江湖（取一侠客名） ========== -->
+    <!-- ========== 入江湖（身份选择 + 取侠客名） ========== -->
     <div class="view active" id="view-auth">
-      <div class="auth-box">
-        <h1 class="auth-title" id="authTitle">入江湖</h1>
-        <p class="auth-desc" id="authDesc">取一侠客名，入此江湖。</p>
+      <div class="enter-stage">
+        <div class="enter-head">
+          <div class="enter-kicker">东方武侠 · 文字修行</div>
+          <h1 class="enter-title">入 江 湖</h1>
+          <p class="enter-sub">择一种人生，取一侠客名，入此江湖。</p>
+        </div>
 
-        <input type="text" class="auth-input" id="authUsername" placeholder="取一侠客名" maxlength="12" autocomplete="off">
-        <button class="btn-primary auth-btn" onclick="app.submitRegister()">入江湖</button>
+        <div class="enter-body">
+          <div class="identity-list" id="identityList"><!-- JS 注入七身份 --></div>
+
+          <div class="identity-detail" id="identityDetail">
+            <div class="id-detail-inner">
+              <div class="id-detail-name" id="idDetailName">江湖游侠</div>
+              <div class="id-detail-motto" id="idDetailMotto">四海为家，自由无拘</div>
+              <div class="id-detail-focus" id="idDetailFocus"></div>
+              <div class="id-detail-skill" id="idDetailSkill"></div>
+              <div class="id-detail-desc" id="idDetailDesc"></div>
+              <div class="id-detail-hint">轻触身份可预览其人生 · 选定后取一名即可入江湖</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="enter-name">
+          <input type="text" class="auth-input" id="authUsername" placeholder="取一侠客名" maxlength="12" autocomplete="off">
+          <button class="btn-enter" onclick="app.submitRegister()">入 江 湖</button>
+        </div>
       </div>
     </div>
 
-    <!-- ========== 江湖首页 ========== -->
+    <!-- ========== 江湖首页（今日修行入口） ========== -->
     <div class="view" id="view-home">
-      <div class="home-scene">
-        <div class="home-time-info">
-          <div class="home-season" id="homeSeason"></div>
-          <div class="home-weather" id="homeWeather"></div>
-        </div>
-        <div class="home-character">
-          <div class="character-silhouette" id="characterSilhouette"></div>
-          <div class="character-name-display" id="homeCharName"></div>
-          <div class="character-identity-display" id="homeCharIdentity"></div>
-        </div>
+      <div class="home-hero">
+        <div class="home-time" id="homeTime"></div>
+        <div class="home-identity-name" id="homeIdentityName"></div>
+        <div class="home-char" id="homeChar"></div>
         <p class="home-greeting" id="homeGreeting"></p>
-        <div class="home-stats-bar" id="homeStatsBar"></div>
-        <div class="home-evaluation">
-          <div class="evaluation-title" id="homeEvalTitle"></div>
-          <div class="evaluation-desc" id="homeEvalDesc"></div>
-        </div>
-        <button class="home-action-btn" id="homeActionBtn" onclick="app.startCultivation()">今日修行</button>
+        <button class="home-cultivate" id="homeActionBtn" onclick="app.startCultivation()">今 日 修 行</button>
+        <div class="home-mini-stats" id="homeMiniStats"></div>
+      </div>
 
-        <div class="identity-switcher-section">
-          <div class="identity-switcher-title">— 七种身份，皆可历 —</div>
-          <div class="identity-switcher" id="identitySwitcher"></div>
-        </div>
-        <div class="current-identity-detail" id="currentIdentityDetail"></div>
-
-        <div class="toolbar">
-          <label class="toolbar-btn">🎵 上传背景音乐
-            <input type="file" id="musicUpload" accept="audio/*" onchange="app.handleMusicUpload(event)">
-          </label>
-          <label class="toolbar-btn">🖼️ 上传侠客画像
-            <input type="file" id="imageUpload" accept="image/*" onchange="app.handleImageUpload(event)">
-          </label>
-        </div>
+      <div class="home-switch">
+        <div class="switch-title">— 七种人生，皆可历 —</div>
+        <div class="identity-switcher" id="identitySwitcher"></div>
       </div>
     </div>
 
     <!-- ========== 我的侠客 ========== -->
     <div class="view" id="view-knight">
-      <div class="knight-header">
-        <h2>我的侠客</h2>
-        <p id="knightPageSubtitle"></p>
-      </div>
-      <div class="stats-panel">
-        <div class="stats-panel-title">属性成长</div>
-        <div id="knightStatsPanel"></div>
-      </div>
-      <div class="stats-panel" style="margin-top:1.5rem;">
-        <div class="stats-panel-title">身份体验</div>
-        <div id="identityProgress"></div>
-      </div>
-      <div class="history-panel">
-        <div class="stats-panel-title">江湖经历</div>
-        <div id="knightHistory"></div>
+      <div class="panel">
+        <div class="knight-header">
+          <h2 class="view-title">我的侠客</h2>
+          <p id="knightPageSubtitle"></p>
+        </div>
+        <div class="stats-panel">
+          <div class="stats-panel-title">属性成长</div>
+          <div id="knightStatsPanel"></div>
+        </div>
+        <div class="stats-panel" style="margin-top:1.4rem;">
+          <div class="stats-panel-title">身份体验</div>
+          <div id="identityProgress"></div>
+        </div>
+        <div class="history-panel">
+          <div class="stats-panel-title">江湖经历</div>
+          <div id="knightHistory"></div>
+        </div>
       </div>
     </div>
 
     <!-- ========== 今日修行 ========== -->
     <div class="view" id="view-cultivation">
-      <div class="cultivation-header">
-        <div class="cultivation-date" id="cultivationDate"></div>
-        <h2 class="cultivation-title">今日修行</h2>
+      <div class="cult-header">
+        <div class="cult-date" id="cultivationDate"></div>
+        <h2 class="cult-title">今 日 修 行</h2>
+        <div class="cult-identity" id="cultIdentity"></div>
       </div>
-      <div id="cultivationContent"></div>
+      <div class="carrier" id="cultivationContent"><!-- JS 注入当日手札 --></div>
     </div>
 
     <!-- ========== 个人界面 ========== -->
     <div class="view" id="view-profile">
-      <div class="profile-header">
-        <h2 id="profileName"></h2>
-        <p id="profileSub"></p>
-      </div>
-
-      <div class="stats-panel">
-        <div class="stats-panel-title">自创人设</div>
-        <div id="profilePersona"></div>
-      </div>
-
-      <div class="stats-panel" style="margin-top:1.5rem;">
-        <div id="profileIdentity"></div>
-      </div>
-
-      <div class="stats-panel" style="margin-top:1.5rem;">
-        <div class="stats-panel-title">藏书阁</div>
-        <div class="library-tabs">
-          <button class="library-tab library-tab-profile active" data-tab="all" onclick="app.switchLibraryTab('all','profileLibraryGrid')">全部</button>
-          <button class="library-tab library-tab-profile" data-tab="poetry" onclick="app.switchLibraryTab('poetry','profileLibraryGrid')">诗词</button>
-          <button class="library-tab library-tab-profile" data-tab="wisdom" onclick="app.switchLibraryTab('wisdom','profileLibraryGrid')">典籍</button>
-          <button class="library-tab library-tab-profile" data-tab="martial" onclick="app.switchLibraryTab('martial','profileLibraryGrid')">武学</button>
+      <div class="panel">
+        <div class="profile-header">
+          <h2 class="view-title" id="profileName"></h2>
+          <p id="profileSub"></p>
         </div>
-        <div class="library-grid" id="profileLibraryGrid"></div>
+
+        <div class="stats-panel">
+          <div class="stats-panel-title">自创人设</div>
+          <div id="profilePersona"></div>
+        </div>
+
+        <div class="stats-panel" style="margin-top:1.4rem;">
+          <div id="profileIdentity"></div>
+        </div>
+
+        <div class="stats-panel" style="margin-top:1.4rem;">
+          <div class="stats-panel-title">藏书阁</div>
+          <div class="library-tabs">
+            <button class="library-tab library-tab-profile active" data-tab="all" onclick="app.switchLibraryTab('all','profileLibraryGrid')">全部</button>
+            <button class="library-tab library-tab-profile" data-tab="poetry" onclick="app.switchLibraryTab('poetry','profileLibraryGrid')">诗词</button>
+            <button class="library-tab library-tab-profile" data-tab="wisdom" onclick="app.switchLibraryTab('wisdom','profileLibraryGrid')">典籍</button>
+            <button class="library-tab library-tab-profile" data-tab="martial" onclick="app.switchLibraryTab('martial','profileLibraryGrid')">武学</button>
+          </div>
+          <div class="library-grid" id="profileLibraryGrid"></div>
+        </div>
       </div>
     </div>
 
-    <!-- ========== 藏书阁（独立视图，备用） ========== -->
+    <!-- ========== 藏书阁（独立视图） ========== -->
     <div class="view" id="view-library">
-      <div class="library-header">
-        <h2>藏书阁</h2>
-        <p>收藏所学典籍、诗词与武学笔记</p>
+      <div class="panel">
+        <div class="library-header">
+          <h2 class="view-title">藏书阁</h2>
+          <p>收藏所学典籍、诗词与武学笔记</p>
+        </div>
+        <div class="library-tabs">
+          <button class="library-tab active" data-tab="all" onclick="app.switchLibraryTab('all')">全部</button>
+          <button class="library-tab" data-tab="poetry" onclick="app.switchLibraryTab('poetry')">诗词</button>
+          <button class="library-tab" data-tab="wisdom" onclick="app.switchLibraryTab('wisdom')">典籍</button>
+          <button class="library-tab" data-tab="martial" onclick="app.switchLibraryTab('martial')">武学</button>
+        </div>
+        <div class="library-grid" id="libraryGrid"></div>
       </div>
-      <div class="library-tabs">
-        <button class="library-tab active" data-tab="all" onclick="app.switchLibraryTab('all')">全部</button>
-        <button class="library-tab" data-tab="poetry" onclick="app.switchLibraryTab('poetry')">诗词</button>
-        <button class="library-tab" data-tab="wisdom" onclick="app.switchLibraryTab('wisdom')">典籍</button>
-        <button class="library-tab" data-tab="martial" onclick="app.switchLibraryTab('martial')">武学</button>
-      </div>
-      <div class="library-grid" id="libraryGrid"></div>
     </div>
 
   </div>
@@ -154,42 +168,35 @@
     <div class="nav-item" data-view="profile" onclick="app.switchView('profile')">
       <span class="nav-icon">🏮</span><span class="nav-label">个人</span>
     </div>
+    <div class="nav-item nav-sound" id="navSound" onclick="app.toggleSound()" title="环境音">
+      <span class="nav-icon" id="soundIcon">🔈</span><span class="nav-label">音</span>
+    </div>
   </nav>
 
-  <!-- 人设编辑弹窗 -->
+  <!-- 人设编辑弹窗（仅文字，无画像上传） -->
   <div class="modal-mask" id="personaModal" style="display:none;">
     <div class="modal-box">
-      <h3>自创人设</h3>
+      <h3 class="modal-title">自创人设</h3>
       <input type="text" class="auth-input" id="personaName" placeholder="人设之名" maxlength="12">
       <textarea class="auth-textarea" id="personaDesc" placeholder="述其人设：来历、性情人等" maxlength="200"></textarea>
-      <div class="auth-gender">
-        <label class="gender-opt"><input type="radio" name="personaGender" value="男"><span>男</span></label>
-        <label class="gender-opt"><input type="radio" name="personaGender" value="女"><span>女</span></label>
-      </div>
       <div id="personaPreview"></div>
-      <label class="toolbar-btn">🖼️ 上传人设画像
-        <input type="file" id="personaImage" accept="image/*" onchange="app.uploadPersonaImage(event)">
-      </label>
-      <div style="margin-top:1rem; text-align:center;">
+      <div style="margin-top:1rem; text-align:center; gap:.6rem; display:flex; justify-content:center;">
         <button class="btn-primary" onclick="app.savePersona()">存</button>
         <button class="btn-secondary" onclick="app.closePersonaModal()">取消</button>
       </div>
     </div>
   </div>
 
-  <!-- 音频播放器 -->
-  <div class="audio-player" id="audioPlayer">
-    <audio id="bgAudio" loop></audio>
-    <span class="audio-close" onclick="app.stopMusic()">✕</span>
-  </div>
+  <!-- 载入淡入遮罩 -->
+  <div id="enterVeil"></div>
 
   <!-- Toast -->
   <div class="toast" id="toast"></div>
 
-  <script src="js/images.js?v=2"></script>
-  <script src="js/data.js?v=2"></script>
-  <script src="js/data-relations.js?v=2"></script>
-  <script src="js/data-identity-cultivation.js?v=2"></script>
-  <script src="js/app.js?v=2"></script>
+  <script src="js/images.js?v=3"></script>
+  <script src="js/data.js?v=3"></script>
+  <script src="js/data-relations.js?v=3"></script>
+  <script src="js/data-identity-cultivation.js?v=3"></script>
+  <script src="js/app.js?v=3"></script>
 </body>
 </html>
