@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>东方江湖 · 视觉素材库</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;500;700&family=Ma+Shan+Zheng&family=ZCOOL+XiaoWei&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink-0:#0a0c0e; --fog:#ece9e1; --fog-soft:rgba(236,233,225,.62); --ink-soft:rgba(220,217,208,.48);
+  --gold:#c9a86a; --gold-soft:rgba(201,168,106,.5); --hairline:rgba(201,168,106,.22); --hairline-soft:rgba(236,233,225,.10);
+  --glass:rgba(18,22,26,.42);
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Noto Serif SC',serif;background:var(--ink-0);color:var(--fog);line-height:1.8;padding:6vh 22px 12vh;-webkit-font-smoothing:antialiased;}
+.wrap{max-width:1040px;margin:0 auto;}
+header{text-align:center;margin-bottom:5vh;}
+.k{font-size:.78rem;letter-spacing:.5em;color:var(--gold-soft);text-transform:uppercase;}
+h1{font-family:'Ma Shan Zheng',cursive;font-size:clamp(2.4rem,7vw,3.6rem);letter-spacing:.18em;margin:.4rem 0;}
+.sub{color:var(--ink-soft);letter-spacing:.1em;font-size:.92rem;}
+.cat{margin:5vh 0;}
+.cat h2{font-family:'ZCOOL XiaoWei',serif;font-size:1.5rem;letter-spacing:.2em;color:var(--fog);padding-bottom:.6rem;border-bottom:1px solid var(--hairline);margin-bottom:1.8rem;}
+.cat h2 span{font-size:.72rem;letter-spacing:.3em;color:var(--gold-soft);margin-left:1rem;}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:18px;}
+.item{background:var(--glass);border:1px solid var(--hairline-soft);border-radius:4px;padding:20px 18px;transition:transform .4s cubic-bezier(.22,.61,.36,1),border-color .4s;}
+.item:hover{transform:translateY(-4px);border-color:var(--hairline);}
+.thumb{height:96px;display:grid;place-items:center;margin-bottom:14px;color:var(--gold);}
+.thumb i{display:block;width:84px;height:84px;background:currentColor;-webkit-mask:center/contain no-repeat;mask:center/contain no-repeat;}
+.item h3{font-family:'ZCOOL XiaoWei',serif;font-size:1.05rem;letter-spacing:.12em;color:var(--fog);}
+.item .path{font-size:.66rem;color:var(--gold-soft);letter-spacing:.04em;margin:.2rem 0 .6rem;word-break:break-all;}
+.item .use{font-size:.82rem;color:var(--ink-soft);line-height:1.7;}
+.item .loc{font-size:.72rem;color:var(--fog-soft);margin-top:.6rem;padding-top:.6rem;border-top:1px dashed var(--hairline-soft);}
+.note{max-width:760px;margin:6vh auto 0;padding:1.6rem 1.8rem;border:1px solid var(--hairline-soft);border-radius:4px;color:var(--ink-soft);font-size:.88rem;line-height:1.9;}
+.note b{color:var(--gold);}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="k">JIANGHU · ASSET LIBRARY</div>
+    <h1>东方江湖视觉素材库</h1>
+    <p class="sub">简约东方抽象 · 可缩放 · 可用 currentColor · 可参与动画 · 非人物 · 非古风插画</p>
+  </header>
+
+  <section class="cat">
+    <h2>东方细线元素 <span>ORNAMENTS</span></h2>
+    <div class="grid">
+      <div class="item"><div class="thumb"><i style="--m:url('jianghu/ornaments/mountain.svg')"></i></div><h3>远山</h3><div class="path">ornaments/mountain.svg</div><div class="use">极简山形线稿，双层山脊。</div><div class="loc">背景层 / 页脚分隔 / 段落收束</div></div>
+      <div class="item"><div class="thumb"><i style="--m:url('jianghu/ornaments/cloud.svg')"></i></div><h3>云气</h3><div class="path">ornaments/cloud.svg</div><div class="use">舒展云气细线。</div><div class="loc">背景层 / 标题上方留白</div></div>
+      <div class="item"><div class="thumb"><i style="--m:url('jianghu/ornaments/bamboo.svg')"></i></div><h3>竹影</h3><div class="path">ornaments/bamboo.svg</div><div class="use">竹节与斜出竹叶。</div><div class="loc">侧栏装饰 / 个人页边</div></div>
+      <div class="item"><div class="thumb"><i style="--m:url('jianghu/ornaments/water.svg')"></i></div><h3>流水线</h3><div class="path">ornaments/water.svg</div><div class="use">双线流水波纹。</div><div class="loc">琴师身份 / 分隔线 / 页脚</div></div>
+      <div class="item"><div class="thumb"><i style="--m:url('jianghu/ornaments/window-lattice.svg')"></i></div><h3>窗棂几何</h3><div class="path">ornaments/window-lattice.svg</div><div class="use">对称窗格。</div><div class="loc">角标 / 印章底纹 / 弹窗框</div></div>
+    </div>
+  </section>
+
+  <section class="cat">
+    <h2>交互特效元素 <span>EFFECTS</span></h2>
+    <div class="grid">
+      <div class="item"><div class="thumb"><i style="--m:url('jianghu/effects/ink-spread.svg')"></i></div><h3>墨迹扩散</h3><div class="path">effects/ink-spread.svg</div><div class="use">同心墨圈，由内向外淡出。</div><div class="loc">点击反馈变体 ink</div></div>
+      <div class="item"><div class="thumb"><i style="--m:url('jianghu/effects/ripple.svg')"></i></div><h3>圆形水波</h3><div class="path">effects/ripple.svg</div><div class="use">三圈同心波。</div><div class="loc">点击反馈变体 ripple（琴师）</div></div>
+      <div class="item"><div class="thumb"><i style="--m:url('jianghu/effects/line-expand.svg')"></i></div><h3>细线展开</h3><div class="path">effects/line-expand.svg</div><div class="use">中线由短展长。</div><div class="loc">hover / 确认墨线</div></div>
+      <div class="item"><div class="thumb"><i style="--m:url('jianghu/effects/light-streak.svg')"></i></div><h3>光痕划过</h3><div class="path">effects/light-streak.svg</div><div class="use">斜向细光痕。</div><div class="loc">剑客点击 / 页面推进</div></div>
+      <div class="item"><div class="thumb"><i style="--m:url('jianghu/effects/seal-glow.svg')"></i></div><h3>印记亮起</h3><div class="path">effects/seal-glow.svg</div><div class="use">方印 + 外光环。</div><div class="loc">确认 / 选择成功</div></div>
+      <div class="item"><div class="thumb"><i style="--m:url('jianghu/effects/mist.svg')"></i></div><h3>淡雾漂移</h3><div class="path">effects/mist.svg</div><div class="use">三层水平雾带。</div><div class="loc">隐士身份 / 背景层</div></div>
+    </div>
+  </section>
+
+  <section class="cat">
+    <h2>七身份抽象符号 <span>IDENTITY</span></h2>
+    <div class="grid">
+      <div class="item"><div class="thumb"><i style="--m:url('jianghu/identity/youxia.svg')"></i></div><h3>游侠</h3><div class="path">identity/youxia.svg</div><div class="use">流动风线 / 不规则轨迹。</div><div class="loc">身份节点 / 风感反馈</div></div>
+      <div class="item"><div class="thumb"><i style="--m:url('jianghu/identity/shijia.svg')"></i></div><h3>世家</h3><div class="path">identity/shijia.svg</div><div class="use">对称玉印 / 几何。</div><div class="loc">身份节点 / 对称光泽</div></div>
+      <div class="item"><div class="thumb"><i style="--m:url('jianghu/identity/shuyuan.svg')"></i></div><h3>书院</h3><div class="path">identity/shuyuan.svg</div><div class="use">纸页 / 墨线 / 字格。</div><div class="loc">身份节点 / 墨线书写</div></div>
+      <div class="item"><div class="thumb"><i style="--m:url('jianghu/identity/yizhe.svg')"></i></div><h3>医者</h3><div class="path">identity/yizhe.svg</div><div class="use">叶片 + 柔光点。</div><div class="loc">身份节点 / 呼吸光点</div></div>
+      <div class="item"><div class="thumb"><i style="--m:url('jianghu/identity/qinshi.svg')"></i></div><h3>琴师</h3><div class="path">identity/qinshi.svg</div><div class="use">水波 + 弦线 + 声波。</div><div class="loc">身份节点 / 水波荡开</div></div>
+      <div class="item"><div class="thumb"><i style="--m:url('jianghu/identity/jianke.svg')"></i></div><h3>剑客</h3><div class="path">identity/jianke.svg</div><div class="use">锐利切线 + 光痕。</div><div class="loc">身份节点 / 光痕一闪</div></div>
+      <div class="item"><div class="thumb"><i style="--m:url('jianghu/identity/yinshi.svg')"></i></div><h3>隐士</h3><div class="path">identity/yinshi.svg</div><div class="use">山形 + 雾 + 静粒。</div><div class="loc">身份节点 / 淡雾漂动</div></div>
+    </div>
+  </section>
+
+  <section class="cat">
+    <h2>背景层素材 <span>BACKGROUND</span></h2>
+    <div class="grid">
+      <div class="item"><div class="thumb"><i style="--m:url('jianghu/background-elements/paper.svg')"></i></div><h3>纸纹</h3><div class="path">background-elements/paper.svg</div><div class="use">极淡纸张纤维（平铺）。</div><div class="loc">背景层 / 内容层底纹</div></div>
+      <div class="item"><div class="thumb"><i style="--m:url('jianghu/background-elements/mountain-far.svg')"></i></div><h3>远山线稿</h3><div class="path">background-elements/mountain-far.svg</div><div class="use">宽幅远山脊线。</div><div class="loc">背景层最远 (bgFar)</div></div>
+      <div class="item"><div class="thumb"><i style="--m:url('jianghu/background-elements/cloud-band.svg')"></i></div><h3>云带</h3><div class="path">background-elements/cloud-band.svg</div><div class="use">宽幅云气带。</div><div class="loc">背景层 (bgCloud / bgMist)</div></div>
+    </div>
+  </section>
+
+  <div class="note">
+    <b>使用约定：</b>所有 SVG 以 <b>currentColor</b> 着色，可用 CSS <code>color</code> 控制；用作图标时以内联或 <code>mask-image</code> 方式引入，以保证可变色与可动画。背景层素材经 CSS <code>url()</code> 引用。七张身份大图（<code>images/*.jpg</code>）不在此库，仅用于「我的侠客 / 个人」页背景。
+  </div>
+</div>
+<script>document.querySelectorAll('.thumb i').forEach(e=>{e.style.webkitMaskImage=e.style.getPropertyValue('--m');e.style.maskImage=e.style.getPropertyValue('--m');});</script>
+</body>
+</html>
