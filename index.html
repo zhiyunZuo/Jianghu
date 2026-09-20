@@ -3,50 +3,64 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-  <meta name="theme-color" content="#0b0f0e">
+  <meta name="theme-color" content="#0c0e10">
   <title>江湖 · 侠客修行</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;500;700;900&family=Ma+Shan+Zheng&family=ZCOOL+XiaoWei&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/style.css?v=3">
+  <link rel="stylesheet" href="css/style.css?v=4">
 </head>
 <body data-identity="youxia" data-time="清晨" data-weather="mist">
 
-  <!-- ===== 2.5D 分层场景舞台（固定背景） ===== -->
+  <!-- ===== 统一氛围舞台（无大图；远近分层 / 雾 / 粒子 / 颗粒） ===== -->
   <div id="bgStage" aria-hidden="true">
-    <div id="bgImage" class="bg-layer" data-depth="0.020"></div>      <!-- 远景 AI 水墨场景 -->
-    <div id="bgCloud" class="bg-layer" data-depth="0.045"></div>      <!-- 云海 / 雾气层 -->
-    <div id="bgGrade" class="bg-layer"></div>                         <!-- 时间 / 季节 色彩分级 -->
-    <div id="bgVignette" class="bg-layer"></div>                      <!-- 暗角 + 颗粒 -->
-    <div id="mistLayer" class="bg-layer" data-depth="0.070"></div>    <!-- 飘移薄雾 -->
-    <div id="particleLayer"></div>                                     <!-- 雨雪 / 花瓣 / 萤火 -->
+    <div id="bgFar" class="bg-layer" data-depth="0.018"></div>
+    <div id="bgMid" class="bg-layer" data-depth="0.030"></div>
+    <div id="bgCloud" class="bg-layer" data-depth="0.055"></div>
+    <div id="bgGrade" class="bg-layer"></div>
+    <div id="bgVignette" class="bg-layer"></div>
+    <div id="bgMist" class="bg-layer" data-depth="0.075"></div>
     <div id="bgGrain" class="bg-layer"></div>
+    <div id="particleLayer"></div>
+  </div>
+
+  <!-- 身份选择时的抽象光晕 / 反馈层（随身份切换语言） -->
+  <div id="identityAura" aria-hidden="true"></div>
+
+  <!-- 个人页沉浸式身份图背景（仅「侠客 / 个人」视图显示） -->
+  <div id="personaBg" aria-hidden="true"></div>
+
+  <!-- 入江湖仪式感遮罩 -->
+  <div id="ritualOverlay" aria-hidden="true">
+    <div class="ritual-inner">
+      <div class="ritual-name" id="ritualName"></div>
+      <div class="ritual-motto" id="ritualMotto"></div>
+      <div class="ritual-ring"></div>
+    </div>
   </div>
 
   <div id="app">
 
     <!-- ========== 入江湖（身份选择 + 取侠客名） ========== -->
     <div class="view active" id="view-auth">
-      <div class="enter-stage">
-        <div class="enter-head">
+      <div class="enter-wrap">
+        <header class="enter-head">
           <div class="enter-kicker">东方武侠 · 文字修行</div>
           <h1 class="enter-title">入 江 湖</h1>
           <p class="enter-sub">择一种人生，取一侠客名，入此江湖。</p>
-        </div>
+        </header>
 
-        <div class="enter-body">
-          <div class="identity-list" id="identityList"><!-- JS 注入七身份 --></div>
+        <div class="enter-grid">
+          <div class="identity-tokens" id="identityList"><!-- JS 注入七身份抽象符号 --></div>
 
-          <div class="identity-detail" id="identityDetail">
-            <div class="id-detail-inner">
-              <div class="id-detail-name" id="idDetailName">江湖游侠</div>
-              <div class="id-detail-motto" id="idDetailMotto">四海为家，自由无拘</div>
-              <div class="id-detail-focus" id="idDetailFocus"></div>
-              <div class="id-detail-skill" id="idDetailSkill"></div>
-              <div class="id-detail-desc" id="idDetailDesc"></div>
-              <div class="id-detail-hint">轻触身份可预览其人生 · 选定后取一名即可入江湖</div>
-            </div>
-          </div>
+          <aside class="identity-detail" id="identityDetail">
+            <div class="id-detail-mark" id="idDetailMark"></div>
+            <div class="id-detail-name" id="idDetailName">江湖游侠</div>
+            <div class="id-detail-motto" id="idDetailMotto">四海为家，自由无拘</div>
+            <div class="id-detail-meta" id="idDetailMeta"></div>
+            <div class="id-detail-desc" id="idDetailDesc"></div>
+            <div class="id-detail-hint">轻触左侧身份，感受另一种人生 · 选定后取一名即可入江湖</div>
+          </aside>
         </div>
 
         <div class="enter-name">
@@ -157,19 +171,19 @@
   <!-- 底部导航 -->
   <nav class="bottom-nav" id="bottomNav" style="display:none;">
     <div class="nav-item active" data-view="home" onclick="app.switchView('home')">
-      <span class="nav-icon">🏔️</span><span class="nav-label">江湖</span>
+      <span class="nav-icon">山</span><span class="nav-label">江湖</span>
     </div>
     <div class="nav-item" data-view="knight" onclick="app.switchView('knight')">
-      <span class="nav-icon">⚔️</span><span class="nav-label">侠客</span>
+      <span class="nav-icon">侠</span><span class="nav-label">侠客</span>
     </div>
     <div class="nav-item" data-view="cultivation" onclick="app.switchView('cultivation')">
-      <span class="nav-icon">📜</span><span class="nav-label">修行</span>
+      <span class="nav-icon">修</span><span class="nav-label">修行</span>
     </div>
     <div class="nav-item" data-view="profile" onclick="app.switchView('profile')">
-      <span class="nav-icon">🏮</span><span class="nav-label">个人</span>
+      <span class="nav-icon">印</span><span class="nav-label">个人</span>
     </div>
     <div class="nav-item nav-sound" id="navSound" onclick="app.toggleSound()" title="环境音">
-      <span class="nav-icon" id="soundIcon">🔈</span><span class="nav-label">音</span>
+      <span class="nav-icon" id="soundIcon">音</span><span class="nav-label">音</span>
     </div>
   </nav>
 
@@ -190,13 +204,16 @@
   <!-- 载入淡入遮罩 -->
   <div id="enterVeil"></div>
 
+  <!-- 点击反馈层 -->
+  <div id="rippleLayer" aria-hidden="true"></div>
+
   <!-- Toast -->
   <div class="toast" id="toast"></div>
 
-  <script src="js/images.js?v=3"></script>
-  <script src="js/data.js?v=3"></script>
-  <script src="js/data-relations.js?v=3"></script>
-  <script src="js/data-identity-cultivation.js?v=3"></script>
-  <script src="js/app.js?v=3"></script>
+  <script src="js/images.js?v=4"></script>
+  <script src="js/data.js?v=4"></script>
+  <script src="js/data-relations.js?v=4"></script>
+  <script src="js/data-identity-cultivation.js?v=4"></script>
+  <script src="js/app.js?v=4"></script>
 </body>
 </html>
