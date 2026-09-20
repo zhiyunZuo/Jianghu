@@ -697,18 +697,25 @@ const App = function() {
 
   // ========== 统一点击反馈（墨色扩散 / 金色涟漪） ==========
   function attachClickFx(){
-    const SEL='.btn-enter,.home-cultivate,.id-token,.event-choice-btn,.library-tab,.library-card,.nav-item,.identity-card-mini,.btn-primary,.btn-secondary';
+    // 点击反馈变体：按元素分化（seal 印记亮 / line 细线展开 / ink 墨扩散 / ripple 金涟漪）
+    const FX={
+      '.btn-enter':'seal', '.home-cultivate':'seal', '.btn-primary':'seal',
+      '.id-token':'line', '.library-tab':'line',
+      '.event-choice-btn':'ink', '.library-card':'ink', '.identity-card-mini':'ink', '.btn-secondary':'ink',
+      '.nav-item':'ripple'
+    };
+    const SEL=Object.keys(FX).join(',');
     document.addEventListener('click',(e)=>{
       const el=e.target.closest(SEL); if(!el) return;
       const layer=$('rippleLayer'); if(!layer) return;
-      const big=el.classList.contains('id-token')||el.classList.contains('home-cultivate')||el.classList.contains('btn-enter');
-      const size=big?150:90;
+      let type='ripple'; for(const sel in FX){ if(el.matches(sel)){ type=FX[sel]; break; } }
       const s=document.createElement('span');
-      s.className='fx-ripple';
+      s.className='fx-'+type;
       s.style.left=e.clientX+'px'; s.style.top=e.clientY+'px';
-      s.style.width=size+'px'; s.style.height=size+'px';
+      if(type==='ripple'){ s.style.width='150px'; s.style.height='150px'; }
+      else if(type==='ink'){ s.style.width='120px'; s.style.height='120px'; }
       layer.appendChild(s);
-      setTimeout(()=>s.remove(),720);
+      setTimeout(()=>s.remove(),760);
     }, true);
   }
 
