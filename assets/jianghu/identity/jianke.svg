@@ -1,5 +1,20 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round">
-<path d="M12 52 L52 12"/>
-<path d="M44 12 L54 12 L54 22" opacity=".8"/>
-<path d="M16 48 L24 56 M48 16 L56 24" opacity=".5"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" fill="none">
+  <defs>
+    <filter id="r" x="-25%" y="-25%" width="150%" height="150%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.014 0.02" numOctaves="2" seed="7" result="n"/>
+      <feDisplacementMap in="SourceGraphic" in2="n" scale="6" xChannelSelector="R" yChannelSelector="G"/>
+    </filter>
+    <radialGradient id="p" cx="50%" cy="50%" r="56%">
+      <stop offset="0%" stop-color="#13171a" stop-opacity=".4"/>
+      <stop offset="100%" stop-color="#13171a" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <ellipse cx="106" cy="100" rx="64" ry="22" fill="url(#p)" transform="rotate(-32 106 100)"/>
+  <g filter="url(#r)">
+    <path d="M50 152 C92 116 128 82 162 46" fill="none" stroke="currentColor" stroke-width="9" stroke-linecap="round" opacity=".9"/>
+    <path d="M50 152 C92 116 128 82 162 46" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" opacity=".5"/>
+  </g>
+  <g fill="currentColor" opacity=".72">
+    <circle cx="162" cy="46" r="3.2"/><circle cx="170" cy="38" r="2"/><circle cx="150" cy="60" r="1.7"/><circle cx="178" cy="52" r="1.4"/>
+  </g>
 </svg>
