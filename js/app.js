@@ -23,19 +23,37 @@ const App = function() {
 
   // ========== 七身份视觉配置 ==========
   // 注意：img 字段已移除。大图仅由 setPersonaBg 在 personal 视图加载。
+  // 强调色为「墨色倾向」：低饱和、可在宣纸上阅读
   const IDENTITY_VISUALS = {
-    youxia: { accent:'#c8a25a', motto:'四海为家，自由无拘', material:'旅行手札', music:'youxia' },
-    shijia: { accent:'#bf8a5e', motto:'门第有承，礼法在心', material:'世家手札', music:'shijia' },
-    shuyuan:{ accent:'#7fa89c', motto:'案上诗书，窗前山水', material:'线装书',     music:'shuyuan' },
-    yizhe:  { accent:'#7fae87', motto:'草木为药，仁心为灯', material:'医案药笺', music:'yizhe' },
-    qinshi:  { accent:'#b9c4d8', motto:'弦上知音，清风明月', material:'琴谱素笺', music:'qinshi' },
-    jianke:  { accent:'#c3ccd6', motto:'一剑霜寒，快意恩仇', material:'剑谱残页', music:'jianke' },
-    yinshi:  { accent:'#9bb39a', motto:'结庐人境，心远地偏', material:'山水册页', music:'yinshi' }
+    youxia: { accent:'#8a6a3a', motto:'四海为家，自由无拘', material:'旅行手札', music:'youxia' },
+    shijia: { accent:'#8a5a38', motto:'门第有承，礼法在心', material:'世家手札', music:'shijia' },
+    shuyuan:{ accent:'#4d7268', motto:'案上诗书，窗前山水', material:'线装书',   music:'shuyuan' },
+    yizhe:  { accent:'#4f7a58', motto:'草木为药，仁心为灯', material:'医案药笺', music:'yizhe' },
+    qinshi: { accent:'#4a5568', motto:'弦上知音，清风明月', material:'琴谱素笺', music:'qinshi' },
+    jianke: { accent:'#3f464f', motto:'一剑霜寒，快意恩仇', material:'剑谱残页', music:'jianke' },
+    yinshi: { accent:'#5c7460', motto:'结庐人境，心远地偏', material:'山水册页', music:'yinshi' }
   };
   const IDENTITY_EN = {
     youxia:'Wanderer', shijia:'Noble', shuyuan:'Scholar', yizhe:'Healer',
     qinshi:'Zither', jianke:'Swordsman', yinshi:'Hermit'
   };
+  // 七身份在画卷中的落点（沿极淡山水路径自然分布）
+  const IDENTITY_POINTS = {
+    youxia:{x:'8%',y:'62%'},   shijia:{x:'21%',y:'38%'}, shuyuan:{x:'34%',y:'58%'},
+    yizhe:{x:'47%',y:'30%'},   qinshi:{x:'60%',y:'56%'}, jianke:{x:'73%',y:'34%'},
+    yinshi:{x:'88%',y:'60%'}
+  };
+  // 空间中只显示极简二字名
+  const IDENTITY_SHORT = { youxia:'游侠', shijia:'世家', shuyuan:'书院', yizhe:'医者',
+    qinshi:'琴师', jianke:'剑客', yinshi:'隐士' };
+  // 今日修行五章节（对应古卷上的五个印记）
+  const CULT_STAGES = [
+    { key:'morning', node:'晨课',   time:'清晨', art:'morning'  },
+    { key:'core',    node:'技艺',   time:'上午', art:'forenoon' },
+    { key:'body',    node:'武学',   time:'下午', art:'afternoon'},
+    { key:'wisdom',  node:'悟道',   time:'傍晚', art:'dusk'     },
+    { key:'event',   node:'江湖事', time:'暮色', art:'night'    }
+  ];
 
   // ========== 七身份抽象符号（细线 SVG，非人物图） ==========
   const IDENTITY_MARKS = {
@@ -107,15 +125,16 @@ const App = function() {
   }
 
   // ========== 场景分级（时间 + 季节色温） ==========
+  // 宣纸上的色温：极淡，只做冷暖倾向，不做大面积渐变
   const TIME_TINT = {
-    '拂晓':['rgba(40,58,96,.30)','rgba(10,16,30,.55)'],
-    '清晨':['rgba(46,66,92,.22)','rgba(14,22,30,.50)'],
-    '正午':['rgba(70,72,52,.12)','rgba(16,22,20,.45)'],
-    '午后':['rgba(78,60,34,.18)','rgba(18,20,18,.50)'],
-    '黄昏':['rgba(92,52,24,.30)','rgba(22,16,16,.55)'],
-    '夜晚':['rgba(12,20,46,.42)','rgba(6,10,24,.62)']
+    '拂晓':['rgba(72,94,132,.10)','rgba(44,56,82,.10)'],
+    '清晨':['rgba(96,126,152,.08)','rgba(60,84,104,.09)'],
+    '正午':['rgba(238,236,222,0)','rgba(124,122,102,.05)'],
+    '午后':['rgba(196,168,116,.10)','rgba(140,120,86,.08)'],
+    '黄昏':['rgba(198,138,74,.14)','rgba(150,104,62,.10)'],
+    '夜晚':['rgba(48,60,96,.16)','rgba(30,40,70,.17)']
   };
-  const SEASON_BOTTOM = { spring:'rgba(120,150,90,.10)', summer:'rgba(70,140,110,.10)', autumn:'rgba(170,110,50,.12)', winter:'rgba(150,170,190,.12)' };
+  const SEASON_BOTTOM = { spring:'rgba(120,150,110,.07)', summer:'rgba(96,140,124,.07)', autumn:'rgba(170,124,64,.08)', winter:'rgba(140,160,180,.08)' };
   function buildGrade(timeName, season){
     const t=TIME_TINT[timeName]||TIME_TINT['清晨'];
     const sb=SEASON_BOTTOM[season]||SEASON_BOTTOM.spring;
@@ -246,48 +265,48 @@ const App = function() {
     showToast('欢迎入江湖，'+name+'！自「'+firstIdentity.name+'」始，七种人生皆可历。','growth');
   }
 
-  // ========== 入江湖 · 身份选择 ==========
+  // ========== 入江湖 · 身份选择（画卷中的七个墨色落点） ==========
   function renderIdentitySelect(){
     const list=$('identityList'); if(!list) return;
     list.innerHTML='';
     JIANGHU_DATA.identities.forEach(id=>{
-      const v=IDENTITY_VISUALS[id.id]||IDENTITY_VISUALS.youxia;
-      const row=document.createElement('div');
-      row.className='id-token'+(id.id===state.selectedIdentityId?' active':'');
-      row.dataset.id=id.id;
-      row.innerHTML=`<div class="id-token-mark">${IDENTITY_MARKS[id.id]||''}</div>`
-        + `<div class="id-token-body"><div class="id-token-name">${id.name}</div>`
-        + `<div class="id-token-en">${IDENTITY_EN[id.id]||''}</div>`
-        + `<div class="id-token-motto">${v.motto}</div></div>`;
-      row.addEventListener('mouseenter',()=>previewIdentity(id.id));
-      row.addEventListener('click',()=>selectIdentity(id.id));
-      list.appendChild(row);
+      const p=IDENTITY_POINTS[id.id]||{x:'50%',y:'50%'};
+      const node=document.createElement('button');
+      node.className='id-node'+(id.id===state.selectedIdentityId?' active':'');
+      node.dataset.id=id.id;
+      node.style.setProperty('--x', p.x);
+      node.style.setProperty('--y', p.y);
+      node.innerHTML=`<span class="bloom"></span><i class="node-dot"></i>`
+        + `<span class="node-name">${IDENTITY_SHORT[id.id]||id.name}</span>`;
+      node.addEventListener('click',(e)=>{ fxAt(e.clientX,e.clientY,'wave'); selectIdentity(id.id); });
+      list.appendChild(node);
     });
+    const space=$('identitySpace'); if(space) space.classList.add('has-active');
     previewIdentity(state.selectedIdentityId, true);
   }
   function previewIdentity(id, force){
     const identity=JIANGHU_DATA.identities.find(i=>i.id===id)||JIANGHU_DATA.identities[0];
     const v=IDENTITY_VISUALS[id]||IDENTITY_VISUALS.youxia;
     applyIdentityTheme(id);
-    document.body.classList.add('aura-on');
-    const aura=$('identityAura');
-    if(aura) aura.innerHTML=`<div class="aura-mark">${IDENTITY_MARKS[id]||''}</div>`;
-    const d=$('idDetailName'), m=$('idDetailMotto'), f=$('idDetailMeta'), de=$('idDetailDesc'), mk=$('idDetailMark');
+    const mk=$('idDetailMark'), d=$('idDetailName'), m=$('idDetailMotto'), f=$('idDetailMeta'), de=$('idDetailDesc');
     if(mk) mk.innerHTML=IDENTITY_MARKS[id]||'';
     if(d) d.textContent=identity.name;
     if(m) m.textContent=v.motto;
-    if(f) f.innerHTML=`专精：<b>${identity.focus}</b><br>绝技：<b>${identity.exclusiveSkill}</b>`;
+    if(f) f.innerHTML=`专精 <b>${identity.focus}</b> · 绝技 <b>${identity.exclusiveSkill}</b>`;
     if(de) de.textContent=identity.longDesc.replace(/\n/g,' ');
+    const colo=$('identityDetail');
+    if(colo && !force){ colo.classList.remove('colo-fade'); void colo.offsetWidth; colo.classList.add('colo-fade'); }
     const grade=buildGrade(getTimeOfDay().name, getCurrentSeason());
     if($('bgGrade')) $('bgGrade').style.background=grade;
     AudioEngine.setIdentity(v.music);
-    if(force){ $$('.id-token').forEach(r=>r.classList.toggle('active', r.dataset.id===id)); }
+    if(force){ $$('.id-node').forEach(r=>r.classList.toggle('active', r.dataset.id===id)); }
   }
   function selectIdentity(id){
     state.selectedIdentityId=id;
-    $$('.id-token').forEach(r=>r.classList.toggle('active', r.dataset.id===id));
+    $$('.id-node').forEach(r=>r.classList.toggle('active', r.dataset.id===id));
     previewIdentity(id, true);
-    showToast('已择「'+JIANGHU_DATA.identities.find(i=>i.id===id).name+'」');
+    inkResponse(id);
+    const nf=$('nameField'); if(nf) nf.classList.add('revealed');
   }
 
   // ========== 入江湖仪式感动画 ==========
@@ -334,9 +353,7 @@ const App = function() {
       const isExp=c.experiencedIdentities.includes(id.id);
       card.className='identity-card-mini'+(isActive?' active':'')+(isExp?' experienced':'');
       card.onclick=()=>switchIdentity(id.id);
-      card.innerHTML=`<div class="identity-mini-icon">${id.icon}</div><div class="identity-mini-name">${id.name}</div>`
-        + (!isExp?'<div class="identity-mini-badge">未历</div>':'')
-        + (isActive?'<div class="identity-mini-current">当前</div>':'');
+      card.innerHTML=`<i class="mini-dot"></i><span class="identity-mini-name">${IDENTITY_SHORT[id.id]||id.name}</span>`;
       container.appendChild(card);
     });
   }
@@ -359,7 +376,7 @@ const App = function() {
     else if(viewName==='knight') renderKnight();
     else if(viewName==='cultivation') renderCultivation();
     else if(viewName==='profile') renderProfile();
-    else if(viewName==='library') renderLibrary();
+    else if(viewName==='library'){ renderLibrary(); moveTabInk('mainTabInk','.library-tab'); }
   }
 
   // ========== 江湖首页 ==========
@@ -380,10 +397,11 @@ const App = function() {
     renderIdentitySwitcher();
 
     const btn=$('homeActionBtn');
-    if(c.cultivatedDates[c.currentIdentityId]===todayStr()){
-      btn.textContent='此身今日已圆满'; btn.classList.add('done');
-    } else {
-      btn.textContent='今 日 修 行'; btn.classList.remove('done');
+    if(btn){
+      const done=c.cultivatedDates[c.currentIdentityId]===todayStr();
+      btn.classList.toggle('done', done);
+      const txt=btn.querySelector('.ch-text');
+      if(txt) txt.textContent=done?'今日已圆满':'今 日 修 行';
     }
   }
 
@@ -420,25 +438,19 @@ const App = function() {
     }
     generateDailyContent();
     updateScene(idId, getTimeOfDay().name, c.weather);
-    switchView('cultivation');
+    state.cultStage=0;
+    inkTransition(null, null, ()=>switchView('cultivation'));
   }
 
-  // ========== 段首细线插图（克制东方元素，非人物图） ==========
-  function segArt(label){
-    let k='night';
-    if(label.indexOf('清晨')===0) k='morning';
-    else if(label.indexOf('上午')===0) k='forenoon';
-    else if(label.indexOf('下午')===0) k='afternoon';
-    else if(label.indexOf('傍晚')===0) k='dusk';
-    const A={
-      morning:`<svg viewBox="0 0 300 84" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"><circle cx="150" cy="34" r="15"/><path d="M40 64 H260"/><path d="M70 64 C100 46 130 46 150 64 C170 46 200 46 230 64"/><path d="M78 30 V64 M222 30 V64" opacity=".45"/></svg>`,
-      forenoon:`<svg viewBox="0 0 300 84" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"><path d="M150 16 V68"/><path d="M150 22 C128 18 110 22 104 30 C124 30 140 34 150 40"/><path d="M150 22 C172 18 190 22 196 30 C176 30 160 34 150 40"/><path d="M112 46 H142 M158 46 H188 M112 54 H142 M158 54 H188" opacity=".6"/></svg>`,
-      afternoon:`<svg viewBox="0 0 300 84" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"><path d="M150 68 V40"/><path d="M150 42 C120 40 108 22 124 14 C140 26 150 30 150 42 C150 30 160 26 176 14 C192 22 180 40 150 42"/><path d="M210 30 C228 26 240 34 250 30 M210 38 C228 34 240 42 250 38" opacity=".5"/></svg>`,
-      dusk:`<svg viewBox="0 0 300 84" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"><path d="M110 50 A40 40 0 0 1 190 50 Z"/><path d="M60 58 H240 M80 64 H220 M100 70 H200" opacity=".55"/></svg>`,
-      night:`<svg viewBox="0 0 300 84" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"><path d="M168 24 A20 20 0 1 0 188 44 A16 16 0 1 1 168 24 Z"/><path d="M70 60 L120 40 L150 52 L182 36 L236 60" opacity=".8"/><path d="M84 56 C108 52 128 60 152 56" opacity=".4"/></svg>`
-    };
-    return `<div class="seg-art">${A[k]}</div>`;
-  }
+  // ========== 段首细线插图（保留原有简约插图，作为文字锚点） ==========
+  const SEG_ART = {
+    morning:`<svg viewBox="0 0 300 84" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"><circle cx="150" cy="34" r="15"/><path d="M40 64 H260"/><path d="M70 64 C100 46 130 46 150 64 C170 46 200 46 230 64"/><path d="M78 30 V64 M222 30 V64" opacity=".45"/></svg>`,
+    forenoon:`<svg viewBox="0 0 300 84" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"><path d="M150 16 V68"/><path d="M150 22 C128 18 110 22 104 30 C124 30 140 34 150 40"/><path d="M150 22 C172 18 190 22 196 30 C176 30 160 34 150 40"/><path d="M112 46 H142 M158 46 H188 M112 54 H142 M158 54 H188" opacity=".6"/></svg>`,
+    afternoon:`<svg viewBox="0 0 300 84" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"><path d="M150 68 V40"/><path d="M150 42 C120 40 108 22 124 14 C140 26 150 30 150 42 C150 30 160 26 176 14 C192 22 180 40 150 42"/><path d="M210 30 C228 26 240 34 250 30 M210 38 C228 34 240 42 250 38" opacity=".5"/></svg>`,
+    dusk:`<svg viewBox="0 0 300 84" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"><path d="M110 50 A40 40 0 0 1 190 50 Z"/><path d="M60 58 H240 M80 64 H220 M100 70 H200" opacity=".55"/></svg>`,
+    night:`<svg viewBox="0 0 300 84" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"><path d="M168 24 A20 20 0 1 0 188 44 A16 16 0 1 1 168 24 Z"/><path d="M70 60 L120 40 L150 52 L182 36 L236 60" opacity=".8"/><path d="M84 56 C108 52 128 60 152 56" opacity=".4"/></svg>`
+  };
+  function segArt(k){ return SEG_ART[k]||SEG_ART.night; }
 
   function generateDailyContent(){
     const c=state.character; const idId=c.currentIdentityId;
@@ -471,48 +483,101 @@ const App = function() {
     const date=new Date();
     if($('cultivationDate')) $('cultivationDate').textContent=`${date.getFullYear()}年${date.getMonth()+1}月${date.getDate()}日`;
 
+    const tl=$('cultTimeline');
     if(c.cultivatedDates[c.currentIdentityId]===todayStr() && !state.todayCultivation){
-      carrier.innerHTML=`<div class="cultivation-complete"><div class="cultivation-complete-icon">🌙</div><p>「${getCurrentIdentity().name}」今日修行已圆满。</p><p style="font-size:.9rem;margin-top:.5rem;">可于首页换一身，再历他样江湖。</p><p style="font-size:.85rem;margin-top:1rem;color:var(--ink-soft);font-style:italic;">「${rand(JIANGHU_DATA.nightWisdom)}」</p></div>`;
+      if(tl) tl.innerHTML='';
+      carrier.innerHTML=`<div class="cultivation-complete">「${getCurrentIdentity().name}」今日修行已圆满。`
+        + `<br><span style="font-size:.9rem;">可于首页换一身，再历他样江湖。</span>`
+        + `<p style="margin-top:1.6rem;font-style:italic;color:var(--ink-500);">「${rand(JIANGHU_DATA.nightWisdom)}」</p></div>`;
       return;
     }
     if(!state.todayCultivation){
-      carrier.innerHTML=`<div class="cultivation-complete"><div class="cultivation-complete-icon">📜</div><p>今日尚未修行。</p><button class="btn-primary" onclick="app.startCultivation()">开始今日修行</button></div>`;
+      if(tl) tl.innerHTML='';
+      carrier.innerHTML=`<div class="cultivation-complete">今日尚未修行。`
+        + `<div class="cult-foot"><button class="jx-btn" onclick="app.startCultivation(event)"><span>展 卷</span><i class="seal"></i></button></div></div>`;
       return;
     }
     const tc=state.todayCultivation;
-    let html='';
-    html+=sectionHTML('清晨 · '+tc.morning.type, tc.morning.title, tc.morning.desc, tc.morning.effects);
-    html+=sectionHTML('上午 · '+tc.core.type, tc.core.title, tc.core.desc, tc.core.effects);
-
-    const wTitle0=tc.wisdom.source||tc.wisdom.title||'悟道';
-    const wFull0=tc.wisdom.original&&tc.wisdom.explanation&&tc.wisdom.masterComment;
-    const wInner0=wFull0
-      ? `<div class="wisdom-original">${tc.wisdom.original}</div><div class="wisdom-section-label">白话释义</div><div class="wisdom-text">${tc.wisdom.explanation}</div><div class="wisdom-section-label">师父点评</div><div class="wisdom-text wisdom-master-quote">${tc.wisdom.masterComment}</div><div class="wisdom-section-label">现实启示</div><div class="wisdom-text">${tc.wisdom.modernInsight||''}</div>`
-      : `<div class="wisdom-original">${tc.wisdom.desc||''}</div>`;
-    html+=`<div class="cultivation-section">${segArt('傍晚')}<span class="section-label seg-dusk">傍晚 · 悟道</span><h3 class="section-title">${wTitle0}</h3><div class="wisdom-block">${wInner0}</div><div class="section-effects">${effTags(tc.wisdom.effects)}</div></div>`;
-
-    if(!tc.eventResolved){
-      html+=`<div class="cultivation-section">${segArt('暮色')}<span class="section-label seg-night">暮色 · 江湖事</span><h3 class="section-title">${tc.event.title}</h3><p class="event-narrative">${tc.event.narrative}</p><div class="event-choices">${tc.event.choices.map((ch,i)=>`<button class="event-choice-btn" onclick="app.handleEventChoice(${i})">${ch.text}</button>`).join('')}</div></div>`;
-    } else {
-      html+=`<div class="cultivation-section">${segArt('暮色')}<span class="section-label seg-night">暮色 · 江湖事</span><h3 class="section-title">${tc.event.title}</h3><p class="event-narrative">${tc.event.narrative}</p><div class="event-result">${tc.eventResult}</div><div class="section-effects">${Object.entries(tc.event.choices[tc.eventChoiceIndex].effects).map(([k,v])=>`<span class="effect-tag ${v<0?'negative':''}">${STAT_NAMES[k]} ${v>0?'+':''}${v}</span>`).join('')}</div></div>`;
+    // 水墨时间轴：五个章节印记
+    if(tl){
+      tl.innerHTML='<span class="tl-line" id="tlLine"></span>' + CULT_STAGES.map((s,i)=>
+        `<button class="tl-node${i===state.cultStage?' active':''}" data-stage="${i}" onclick="app.pickStage(${i},event)">`
+        + `<i class="d"></i><span class="n">${s.node}</span></button>`).join('');
     }
+    let html='';
+    html+=panelHTML(0, '清晨 · 晨课', tc.morning.title, `<p class="panel-body">${tc.morning.desc}</p>`, effTags(tc.morning.effects));
+    html+=panelHTML(1, '上午 · 技艺', tc.core.title,    `<p class="panel-body">${tc.core.desc}</p>`,    effTags(tc.core.effects));
+    html+=panelHTML(2, '下午 · 武学', tc.body.title,    `<p class="panel-body">${tc.body.desc}</p>`,    effTags(tc.body.effects));
 
-    html+=`<div class="night-wisdom"><div class="night-wisdom-label">— 江湖夜语 —</div><div class="night-wisdom-text">「${rand(JIANGHU_DATA.nightWisdom)}」</div></div>`;
-    if(tc.eventResolved) html+=`<div style="text-align:center;margin-top:1.5rem;"><button class="btn-primary" onclick="app.completeCultivation()">修行圆满</button></div>`;
+    const wTitle=tc.wisdom.source||tc.wisdom.title||'悟道';
+    const wFull=tc.wisdom.original&&tc.wisdom.explanation&&tc.wisdom.masterComment;
+    const wInner=wFull
+      ? `<div class="wisdom-original">${tc.wisdom.original}</div>`
+        + `<div class="wisdom-label">白话释义</div><div class="wisdom-text">${tc.wisdom.explanation}</div>`
+        + `<div class="wisdom-label">师父点评</div><div class="wisdom-text wisdom-master">${tc.wisdom.masterComment}</div>`
+        + `<div class="wisdom-label">现实启示</div><div class="wisdom-text">${tc.wisdom.modernInsight||''}</div>`
+      : `<div class="wisdom-original">${tc.wisdom.desc||''}</div>`;
+    html+=panelHTML(3, '傍晚 · 悟道', wTitle, wInner, effTags(tc.wisdom.effects));
+
+    let evInner=`<p class="event-narrative">${tc.event.narrative}</p>`;
+    if(!tc.eventResolved){
+      evInner+=tc.event.choices.map((ch,i)=>
+        `<button class="jx-choice" onclick="app.handleEventChoice(${i},event)">${ch.text}</button>`).join('');
+    } else {
+      evInner+=`<div class="event-result">${tc.eventResult}</div>`
+        + `<div class="cult-foot"><button class="jx-confirm" onclick="app.completeCultivation(event)">`
+        + `<span>修 行 圆 满</span><i class="seal"></i></button></div>`;
+    }
+    html+=panelHTML(4, '暮色 · 江湖事', tc.event.title, evInner,
+      tc.eventResolved ? Object.entries(tc.event.choices[tc.eventChoiceIndex].effects)
+        .map(([k,val])=>`<span class="effect-tag${val<0?' negative':''}">${STAT_NAMES[k]} ${val>0?'+':''}${val}</span>`).join('') : '');
+
+    html+=`<div class="night-wisdom"><div class="night-wisdom-label">— 江 湖 夜 语 —</div>`
+      + `<div class="night-wisdom-text">「${rand(JIANGHU_DATA.nightWisdom)}」</div></div>`;
     carrier.innerHTML=html;
+    showStage(state.cultStage||0, true);
   }
 
-  function sectionHTML(label, title, desc, effects){
-    return `<div class="cultivation-section">${segArt(label)}<span class="section-label">${label}</span><h3 class="section-title">${title}</h3><p class="section-desc">${desc}</p><div class="section-effects">${effTags(effects)}</div></div>`;
-  }
-  function effTags(effects){ return Object.entries(effects).map(([k,v])=>`<span class="effect-tag">${STAT_NAMES[k]} +${v}</span>`).join(''); }
+  function effTags(effects){ return Object.entries(effects).map(([k,v])=>`<span class="effect-tag">${STAT_NAMES[k]} ${v>0?'+':''}${v}</span>`).join(''); }
 
-  function handleEventChoice(idx){
+  // 章节纸页（展开一页古籍）
+  function panelHTML(i, label, title, inner, effects){
+    const st=CULT_STAGES[i]||{art:'night'};
+    return `<div class="cult-panel" data-stage="${i}">`
+      + `<div class="panel-art">${segArt(st.art)}</div>`
+      + `<span class="panel-label">${label}</span>`
+      + `<h3 class="panel-title">${title}</h3>`
+      + inner
+      + (effects?`<div class="panel-effects">${effects}</div>`:'')
+      + `</div>`;
+  }
+  // 时间轴节点 → 内容展开
+  function showStage(i, silent){
+    state.cultStage=i;
+    $$('.tl-node').forEach(n=>n.classList.toggle('active', Number(n.dataset.stage)===i));
+    $$('.cult-panel').forEach(p=>p.classList.toggle('show', Number(p.dataset.stage)===i));
+    if(silent) return;
+    const line=$('tlLine');
+    if(line){ line.classList.add('flash'); setTimeout(()=>line.classList.remove('flash'),520); }
+  }
+  function pickStage(i, ev){
+    const node=ev?ev.currentTarget:null;
+    if(node){ const d=node.querySelector('.d'); if(d){ d.style.animation='none'; void d.offsetWidth; d.style.animation=''; } }
+    if(ev) fxAt(ev.clientX, ev.clientY, 'wave');
+    showStage(i);
+  }
+
+  function handleEventChoice(idx, ev){
     if(!state.todayCultivation||state.todayCultivation.eventResolved) return;
     const tc=state.todayCultivation; const choice=tc.event.choices[idx];
     tc.eventResolved=true; tc.eventResult=choice.result; tc.eventChoiceIndex=idx;
-    applyEffects(choice.effects); renderCultivation();
+    // 墨线自左向右生长 → 小范围墨迹扩散 → 文字加深
+    const el=ev?ev.currentTarget:null;
+    if(el) el.classList.add('chosen');
+    if(ev) fxAt(ev.clientX, ev.clientY, 'ink');
+    applyEffects(choice.effects);
     showToast(Object.entries(choice.effects).map(([k,v])=>`${STAT_NAMES[k]} ${v>0?'+':''}${v}`).join(' · '),'growth');
+    setTimeout(()=>{ renderCultivation(); showStage(4, true); }, 480);
   }
 
   function applyEffects(effects){
@@ -521,7 +586,7 @@ const App = function() {
     saveState();
   }
 
-  function completeCultivation(){
+  function completeCultivation(ev){
     const c=state.character; const tc=state.todayCultivation;
     applyEffects(tc.morning.effects); applyEffects(tc.core.effects); applyEffects(tc.body.effects); applyEffects(tc.wisdom.effects);
     const merged={};
@@ -539,8 +604,11 @@ const App = function() {
     }
     c.dayCount++; c.cultivatedDates[c.currentIdentityId]=todayStr(); c.weather=getCurrentWeather();
     saveState(); state.todayCultivation=null;
-    showToast('修行圆满！'+Object.entries(merged).map(([k,v])=>`${STAT_NAMES[k]} +${v}`).join(' · '),'growth');
-    setTimeout(()=>{ switchView('home'); renderHome(); },1500);
+    if(ev) fxAt(ev.clientX, ev.clientY, 'seal');
+    showToast('修行圆满！'+Object.entries(merged).map(([k,v])=>`${STAT_NAMES[k]} ${v>0?'+':''}${v}`).join(' · '),'growth');
+    setTimeout(()=>{
+      inkTransition(ev?ev.clientX:null, ev?ev.clientY:null, ()=>{ switchView('home'); renderHome(); });
+    },900);
   }
 
   // ========== 个人界面 ==========
@@ -551,13 +619,20 @@ const App = function() {
     if($('profileSub')) $('profileSub').textContent=`${c.username} · 现历 ${identity.name}`;
     const personaBox=$('profilePersona');
     if(c.persona){
-      personaBox.innerHTML=`<div class="persona-card"><div class="persona-body"><div class="persona-name">${c.persona.name} <span class="contact-relation">${c.persona.gender||''}</span></div><div class="persona-desc">${c.persona.desc}</div></div><button class="btn-secondary" onclick="app.openPersonaModal()">改</button></div>`;
+      personaBox.innerHTML=`<div class="persona-row"><div><div class="persona-line">${c.persona.name}</div>`
+        + `<div class="persona-desc">${c.persona.desc}</div></div>`
+        + `<button class="jx-link" onclick="app.openPersonaModal()">重题</button></div>`;
     } else {
-      personaBox.innerHTML=`<button class="btn-secondary" onclick="app.openPersonaModal()">＋ 自创人设</button>`;
+      personaBox.innerHTML=`<button class="jx-link" onclick="app.openPersonaModal()">＋ 题 一 人 设</button>`;
     }
     const ip=$('profileIdentity'); const exp=c.experiencedIdentities.length, total=JIANGHU_DATA.identities.length;
-    ip.innerHTML=`<div class="identity-progress-title">身份体验 (${exp}/${total})</div><div class="identity-progress-bar"><div class="identity-progress-fill" style="width:${(exp/total)*100}%"></div></div><div class="identity-progress-list">${JIANGHU_DATA.identities.map(id=>{const e=c.experiencedIdentities.includes(id.id),cur=c.currentIdentityId===id.id;return `<span class="identity-progress-tag ${e?'experienced':''} ${cur?'current':''}">${id.icon} ${id.name}${cur?' (今)':''}${e&&!cur?' ✓':''}</span>`;}).join('')}</div>`;
+    ip.innerHTML=`<div class="id-progress-title">已历 ${exp} / ${total}</div><div class="id-dots">`
+      + JIANGHU_DATA.identities.map(id=>{
+          const e=c.experiencedIdentities.includes(id.id), cur=c.currentIdentityId===id.id;
+          return `<span class="id-dot-item${e?' experienced':''}${cur?' current':''}"><i class="d"></i>${IDENTITY_SHORT[id.id]||id.name}</span>`;
+        }).join('') + `</div>`;
     renderLibrary('profileLibraryGrid');
+    moveTabInk('profileTabInk','.library-tab-profile');
   }
 
   function openPersonaModal(){
@@ -570,30 +645,40 @@ const App = function() {
     const c=state.character; const name=$('personaName').value.trim(); const desc=$('personaDesc').value.trim();
     if(!name){ showToast('请为人设取名'); return; }
     c.persona={ name:name, desc:desc||'江湖一奇人，行迹莫测。', gender:c.persona?c.persona.gender:'', image:c.persona?c.persona.image:null };
-    saveState(); closePersonaModal(); renderProfile(); switchView('profile');
-    showToast('人设已成：'+name,'growth');
+    saveState(); renderProfile();
+    // 落印：印章落下后收起题字纸
+    sealDrop($('personaSaveBtn'));
+    setTimeout(()=>{ closePersonaModal(); showToast('人设已成：'+name,'growth'); },640);
   }
 
   // ========== 我的侠客 ==========
   function renderKnight(){
     if(!state.character) return;
     const c=state.character; const identity=getCurrentIdentity();
-    if($('knightPageSubtitle')) $('knightPageSubtitle').textContent=`${c.name} · ${identity.name}`;
+    if($('knightName')) $('knightName').textContent=c.name;
+    if($('knightPageSubtitle')) $('knightPageSubtitle').textContent=`第 ${c.dayCount} 日 · ${identity.name}`;
     const ip=$('identityProgress');
     if(ip){ const exp=c.experiencedIdentities.length, total=JIANGHU_DATA.identities.length;
-      ip.innerHTML=`<div class="identity-progress-title">身份体验进度 (${exp}/${total})</div><div class="identity-progress-bar"><div class="identity-progress-fill" style="width:${(exp/total)*100}%"></div></div><div class="identity-progress-list">${JIANGHU_DATA.identities.map(id=>{const e=c.experiencedIdentities.includes(id.id),cur=c.currentIdentityId===id.id;return `<span class="identity-progress-tag ${e?'experienced':''} ${cur?'current':''}">${id.icon} ${id.name}${cur?' (当前)':''}${e&&!cur?' ✓':''}</span>`;}).join('')}</div>`;
+      ip.innerHTML=`<div class="id-progress-title">已历 ${exp} / ${total}</div><div class="id-dots">`
+        + JIANGHU_DATA.identities.map(id=>{
+            const e=c.experiencedIdentities.includes(id.id), cur=c.currentIdentityId===id.id;
+            return `<span class="id-dot-item${e?' experienced':''}${cur?' current':''}"><i class="d"></i>${IDENTITY_SHORT[id.id]||id.name}</span>`;
+          }).join('') + `</div>`;
     }
     const panel=$('knightStatsPanel'); if(panel){
       panel.innerHTML='';
       Object.entries(c.stats).forEach(([k,v])=>{
         const pct=Math.min(100,(v/STAT_MAX)*100);
         const row=document.createElement('div'); row.className='stat-row';
-        row.innerHTML=`<div class="stat-label">${STAT_NAMES[k]}</div><div class="stat-bar-container"><div class="stat-bar-fill" style="width:${pct}%"></div></div><div class="stat-value">${v}</div>`;
+        row.innerHTML=`<div class="stat-label">${STAT_NAMES[k]}</div>`
+          + `<div class="stat-ink"><i style="width:${pct}%"></i></div>`
+          + `<div class="stat-value">${v}</div>`;
         panel.appendChild(row);
       });
       const evalData=getEvaluation(c.stats); const ed=document.createElement('div');
-      ed.style.cssText='text-align:center;margin-top:1rem;padding-top:1rem;border-top:1px dashed var(--hairline-soft);';
-      ed.innerHTML=`<div style="font-size:.8rem;color:var(--ink-soft);letter-spacing:.1em;">总属性 ${totalStats(c.stats)} · 修行 ${c.dayCount-1} 日</div><div style="font-size:1rem;color:var(--id-accent);margin-top:.3rem;letter-spacing:.2em;">${evalData.title}</div>`;
+      ed.className='stat-foot';
+      ed.innerHTML=`<div class="foot-meta">总属性 ${totalStats(c.stats)} · 修行 ${c.dayCount-1} 日</div>`
+        + `<div class="foot-title">${evalData.title}</div>`;
       panel.appendChild(ed);
     }
     const hist=$('knightHistory');
@@ -603,7 +688,10 @@ const App = function() {
         hist.innerHTML='';
         c.history.slice(0,20).forEach(h=>{
           const item=document.createElement('div'); item.className='history-item';
-          item.innerHTML=`<div class="history-date">第 ${h.day} 日 · ${h.date}${h.identity?' · '+h.identity:''}</div><div>${h.morning} · ${h.art} · ${h.wu}</div><div style="font-size:.8rem;color:var(--id-accent);margin-top:.2rem;">悟：${h.wisdom||'—'}</div><div style="font-size:.8rem;margin-top:.2rem;">遇：${h.event}</div><div class="history-growth">${Object.entries(h.effects).map(([k,v])=>`<span class="growth-tag ${v<0?'negative':''}">${STAT_NAMES[k]} ${v>0?'+':''}${v}</span>`).join('')}</div>`;
+          item.innerHTML=`<div class="history-date">第 ${h.day} 日 · ${h.date}${h.identity?' · '+h.identity:''}</div>`
+            + `<div class="history-line">${h.morning} · ${h.art} · ${h.wu}</div>`
+            + `<div class="history-line" style="color:var(--ink-500);">悟：${h.wisdom||'—'}　遇：${h.event}</div>`
+            + `<div class="history-growth">${Object.entries(h.effects).map(([k,v])=>`<span class="growth-tag${v<0?' negative':''}">${STAT_NAMES[k]} ${v>0?'+':''}${v}</span>`).join('')}</div>`;
           hist.appendChild(item);
         });
       }
@@ -621,17 +709,30 @@ const App = function() {
     if(items.length===0){ grid.innerHTML='<div class="library-empty">藏书阁尚空。<br>每日修行，典籍自入阁。</div>'; return; }
     items.forEach(item=>{
       const card=document.createElement('div'); card.className='library-card';
-      card.onclick=()=>card.classList.toggle('expanded');
+      card.onclick=(e)=>{ card.classList.toggle('expanded'); fxAt(e.clientX,e.clientY,'ink'); };
       card.innerHTML=`<div class="library-card-title">${item.title}</div><div class="library-card-meta">${item.meta}</div><div class="library-card-preview">${item.preview}</div><div class="library-card-full">${item.full}</div>`;
       grid.appendChild(card);
     });
   }
   function switchLibraryTab(tab,containerId){
     state.libraryTab=tab; state.libraryContainer=containerId||'libraryGrid';
-    $$(containerId==='profileLibraryGrid'?'.library-tab-profile':'.library-tab').forEach(t=>t.classList.remove('active'));
-    const sel=document.querySelector((containerId==='profileLibraryGrid'?'.library-tab-profile':'.library-tab')+`[data-tab="${tab}"]`);
+    const isProfile = containerId==='profileLibraryGrid';
+    const sel0 = isProfile?'.library-tab-profile':'.library-tab';
+    $$(sel0).forEach(t=>t.classList.remove('active'));
+    const sel=document.querySelector(sel0+`[data-tab="${tab}"]`);
     if(sel) sel.classList.add('active');
     renderLibrary(containerId);
+    moveTabInk(isProfile?'profileTabInk':'mainTabInk', sel0);
+  }
+  // 分类墨线：像毛笔一样移动到新的位置
+  function moveTabInk(inkId, sel){
+    const ink=$(inkId); if(!ink) return;
+    const active=document.querySelector(sel+'.active');
+    if(!active || !active.offsetParent){ return; }
+    const parent=ink.parentElement; if(!parent) return;
+    const pr=parent.getBoundingClientRect(), ar=active.getBoundingClientRect();
+    ink.style.left=(ar.left-pr.left)+'px';
+    ink.style.width=ar.width+'px';
   }
 
   // ========== 环境音（Web Audio 生成式，无需上传） ==========
@@ -695,27 +796,103 @@ const App = function() {
     showToast(state.soundOn?'环境音已起':'环境音已静');
   }
 
-  // ========== 统一点击反馈（墨色扩散 / 金色涟漪） ==========
+  // ========== 水墨回应：七身份各异的抽象反馈（非人物、非大场景） ==========
+  function inkResponse(id){
+    const layer=$('inkFx'); if(!layer) return;
+    const box=document.createElement('div'); box.className='inkfx';
+    let html='';
+    switch(id){
+      case 'youxia': // 流动墨线，横向如风
+        html='<i class="fx-wind" style="--t:34%"></i>'
+           + '<i class="fx-wind" style="--t:50%;animation-delay:.12s"></i>'
+           + '<i class="fx-wind" style="--t:66%;animation-delay:.24s"></i>';
+        break;
+      case 'shijia': // 规整对称的玉印结构
+        html='<i class="fx-jade"></i>';
+        break;
+      case 'shuyuan': // 纸页墨线渐次出现
+        html='<i class="fx-page" style="--t:38%"></i>'
+           + '<i class="fx-page" style="--t:46%;animation-delay:.1s"></i>'
+           + '<i class="fx-page" style="--t:54%;animation-delay:.2s"></i>'
+           + '<i class="fx-page" style="--t:62%;animation-delay:.3s"></i>';
+        break;
+      case 'yizhe': // 柔和墨点扩散
+        html='<i class="fx-dot" style="--x:36%;--y:44%"></i>'
+           + '<i class="fx-dot" style="--x:54%;--y:38%"></i>'
+           + '<i class="fx-dot" style="--x:64%;--y:54%;animation-delay:.12s"></i>'
+           + '<i class="fx-dot" style="--x:44%;--y:60%;animation-delay:.18s"></i>'
+           + '<i class="fx-dot" style="--x:58%;--y:50%"></i>';
+        break;
+      case 'qinshi': // 同心水波与弦线
+        html='<i class="fx-ring"></i>'
+           + '<i class="fx-ring" style="animation-delay:.14s"></i>'
+           + '<i class="fx-ring" style="animation-delay:.3s"></i>';
+        break;
+      case 'jianke': // 短促锐利的光痕切线
+        html='<i class="fx-cut" style="--t:44%"></i>'
+           + '<i class="fx-cut" style="--t:53%;animation-delay:.08s"></i>';
+        break;
+      case 'yinshi': // 山影自雾中显现
+        html='<i class="fx-mist"></i><i class="fx-ridge"></i>';
+        break;
+    }
+    box.innerHTML=html;
+    layer.appendChild(box);
+    setTimeout(()=>box.remove(),1400);
+  }
+
+  // ========== 点击反馈（墨扩散 / 水波 / 印记 / 细线） ==========
+  function fxAt(x,y,type){
+    const layer=$('rippleLayer'); if(!layer) return;
+    const s=document.createElement('span');
+    s.className='fx-'+type;
+    s.style.left=(x||window.innerWidth/2)+'px';
+    s.style.top=(y||window.innerHeight/2)+'px';
+    layer.appendChild(s);
+    setTimeout(()=>s.remove(),900);
+  }
+
+  // ========== 水墨转场：墨滴落纸 → 铺开 → 自墨雾中显现 ==========
+  function inkTransition(x, y, cb){
+    const ov=$('inkTransition'); if(!ov){ cb&&cb(); return; }
+    ov.style.setProperty('--ix',(x||window.innerWidth/2)+'px');
+    ov.style.setProperty('--iy',(y||window.innerHeight/2)+'px');
+    ov.classList.remove('lift');
+    ov.classList.add('drop');
+    setTimeout(()=>{
+      cb&&cb();
+      ov.classList.add('lift');
+      setTimeout(()=>{ ov.classList.remove('drop','lift'); },640);
+    },560);
+  }
+  function go(viewName){
+    if(viewName===state.view) return;
+    inkTransition(null,null,()=>switchView(viewName));
+  }
+
+  // ========== 落印（确认类操作） ==========
+  function sealDrop(el){
+    if(el){ el.classList.add('sealing'); setTimeout(()=>el.classList.remove('sealing'),700); }
+    const layer=$('inkFx');
+    if(layer&&el){
+      const r=el.getBoundingClientRect();
+      fxAt(r.left+r.width/2, r.top+r.height/2, 'seal');
+    }
+  }
+
+  // ========== 统一点击反馈（墨色扩散 / 水波 / 印记 / 细线） ==========
   function attachClickFx(){
     // 点击反馈变体：按元素分化（seal 印记亮 / line 细线展开 / ink 墨扩散 / ripple 金涟漪）
     const FX={
-      '.btn-enter':'seal', '.home-cultivate':'seal', '.btn-primary':'seal',
-      '.id-token':'line', '.library-tab':'line',
-      '.event-choice-btn':'ink', '.library-card':'ink', '.identity-card-mini':'ink', '.btn-secondary':'ink',
-      '.nav-item':'ripple'
+      '.jx-btn':'seal', '.jx-confirm':'seal', '.jx-chapter':'seal',
+      '.library-tab':'line', '.jx-link':'line',
+      '.nav-item':'ink', '.history-item':'ink'
     };
     const SEL=Object.keys(FX).join(',');
     document.addEventListener('click',(e)=>{
       const el=e.target.closest(SEL); if(!el) return;
-      const layer=$('rippleLayer'); if(!layer) return;
-      let type='ripple'; for(const sel in FX){ if(el.matches(sel)){ type=FX[sel]; break; } }
-      const s=document.createElement('span');
-      s.className='fx-'+type;
-      s.style.left=e.clientX+'px'; s.style.top=e.clientY+'px';
-      if(type==='ripple'){ s.style.width='150px'; s.style.height='150px'; }
-      else if(type==='ink'){ s.style.width='120px'; s.style.height='120px'; }
-      layer.appendChild(s);
-      setTimeout(()=>s.remove(),760);
+      let type='ink'; for(const sel in FX){ if(el.matches(sel)){ type=FX[sel]; break; } }
+      fxAt(e.clientX, e.clientY, type);
     }, true);
   }
 
@@ -774,12 +951,20 @@ const App = function() {
 
     // 载入淡入
     const veil=$('enterVeil'); if(veil) setTimeout(()=>veil.classList.add('gone'),300);
+
+    // 分类墨线：布局变化 / 字体加载后重新对准
+    const reInk=()=>requestAnimationFrame(()=>{
+      moveTabInk('mainTabInk','.library-tab');
+      moveTabInk('profileTabInk','.library-tab-profile');
+    });
+    window.addEventListener('resize', reInk);
+    if(document.fonts && document.fonts.ready) document.fonts.ready.then(reInk);
   }
 
   return {
     init, showAuth, submitRegister,
-    switchView, switchIdentity, selectIdentity,
-    startCultivation, handleEventChoice, completeCultivation,
+    switchView, go, switchIdentity, selectIdentity,
+    startCultivation, handleEventChoice, completeCultivation, pickStage,
     renderProfile, openPersonaModal, closePersonaModal, savePersona,
     switchLibraryTab, toggleSound
   };
