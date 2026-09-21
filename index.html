@@ -3,34 +3,35 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-  <meta name="theme-color" content="#0c0e10">
-  <title>江湖 · 侠客修行</title>
+  <meta name="theme-color" content="#f3f0e9">
+  <title>江湖 · 水墨修行长卷</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;500;700;900&family=Ma+Shan+Zheng&family=ZCOOL+XiaoWei&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/style.css?v=5">
+  <link rel="stylesheet" href="css/style.css?v=6">
 </head>
 <body data-identity="youxia" data-time="清晨" data-weather="mist">
 
-  <!-- ===== 统一氛围舞台（无大图；远近分层 / 雾 / 粒子 / 颗粒） ===== -->
+  <!-- ===== 背景层：宣纸 · 远山 · 雾气 · 纸纹 · 粒子 ===== -->
   <div id="bgStage" aria-hidden="true">
     <div id="bgFar" class="bg-layer" data-depth="0.018"></div>
     <div id="bgMid" class="bg-layer" data-depth="0.030"></div>
-    <div id="bgCloud" class="bg-layer" data-depth="0.055"></div>
+    <div id="bgCloud" class="bg-layer" data-depth="0.052"></div>
     <div id="bgGrade" class="bg-layer"></div>
     <div id="bgVignette" class="bg-layer"></div>
-    <div id="bgMist" class="bg-layer" data-depth="0.075"></div>
+    <div id="bgMist" class="bg-layer" data-depth="0.072"></div>
     <div id="bgGrain" class="bg-layer"></div>
     <div id="particleLayer"></div>
   </div>
 
-  <!-- 身份选择时的抽象光晕 / 反馈层（随身份切换语言） -->
-  <div id="identityAura" aria-hidden="true"></div>
+  <!-- 身份水墨回应层（七身份各异） -->
+  <div id="inkFx" aria-hidden="true"></div>
 
-  <!-- 个人页沉浸式身份图背景（仅「侠客 / 个人」视图显示） -->
+  <!-- 个人页身份大图 + 水墨遮罩（仅「我的侠客 / 个人」） -->
   <div id="personaBg" aria-hidden="true"></div>
+  <div id="personaWash" aria-hidden="true"></div>
 
-  <!-- 入江湖仪式感遮罩 -->
+  <!-- 入江湖定名仪式 -->
   <div id="ritualOverlay" aria-hidden="true">
     <div class="ritual-inner">
       <div class="ritual-name" id="ritualName"></div>
@@ -41,44 +42,58 @@
 
   <div id="app">
 
-    <!-- ========== 入江湖（身份选择 + 取侠客名） ========== -->
+    <!-- ========== 入江湖（画卷构图） ========== -->
     <div class="view active" id="view-auth">
-      <div class="enter-wrap">
-        <header class="enter-head">
-          <div class="enter-kicker">东方武侠 · 文字修行</div>
-          <h1 class="enter-title">入 江 湖</h1>
-          <p class="enter-sub">择一种人生，取一侠客名，入此江湖。</p>
+      <div class="scroll-stage">
+        <header class="scroll-head">
+          <div class="head-mark">江 湖</div>
+          <h1 class="scroll-title">入 江 湖</h1>
+          <p class="scroll-sub">择一种人生，取一侠客名，入此江湖</p>
         </header>
 
-        <div class="enter-grid">
-          <div class="identity-tokens" id="identityList"><!-- JS 注入七身份抽象符号 --></div>
+        <section class="identity-space" id="identitySpace">
+          <svg class="space-path" viewBox="0 0 1000 300" preserveAspectRatio="none" aria-hidden="true">
+            <path d="M0 250 L110 196 L190 232 L300 168 L390 224 L500 158 L610 218 L720 172 L830 226 L930 186 L1000 214"
+                  fill="none" stroke="rgba(21,24,26,.10)" stroke-width="1.2"/>
+            <path d="M0 276 L140 236 L260 268 L400 232 L540 272 L680 240 L820 274 L960 246 L1000 258"
+                  fill="none" stroke="rgba(21,24,26,.06)" stroke-width="1"/>
+            <path d="M0 226 C 40 210, 60 190, 80 186 C 130 178, 170 122, 210 114 C 260 104, 300 178, 340 174
+                     C 390 170, 425 92, 470 90 C 520 88, 555 170, 600 168 C 650 166, 688 104, 730 102
+                     C 780 100, 835 182, 880 180 C 930 178, 970 198, 1000 208"
+                  fill="none" stroke="rgba(21,24,26,.20)" stroke-width="1"/>
+          </svg>
+          <div class="id-nodes" id="identityList"><!-- JS 注入七个墨色落点 --></div>
+        </section>
 
-          <aside class="identity-detail" id="identityDetail">
-            <div class="id-detail-mark" id="idDetailMark"></div>
-            <div class="id-detail-name" id="idDetailName">江湖游侠</div>
-            <div class="id-detail-motto" id="idDetailMotto">四海为家，自由无拘</div>
-            <div class="id-detail-meta" id="idDetailMeta"></div>
-            <div class="id-detail-desc" id="idDetailDesc"></div>
-            <div class="id-detail-hint">轻触左侧身份，感受另一种人生 · 选定后取一名即可入江湖</div>
-          </aside>
-        </div>
+        <section class="colophon" id="identityDetail">
+          <div class="colo-mark" id="idDetailMark"></div>
+          <div class="colo-name" id="idDetailName">江湖游侠</div>
+          <div class="colo-motto" id="idDetailMotto">四海为家，自由无拘</div>
+          <div class="colo-meta" id="idDetailMeta"></div>
+          <div class="colo-desc" id="idDetailDesc"></div>
+        </section>
 
-        <div class="enter-name">
-          <input type="text" class="auth-input" id="authUsername" placeholder="取一侠客名" maxlength="12" autocomplete="off">
-          <button class="btn-enter" onclick="app.submitRegister()">入 江 湖</button>
-        </div>
+        <section class="name-field" id="nameField">
+          <div class="paper-note">
+            <span class="note-label">取 一 侠 客 名</span>
+            <input type="text" class="jx-input" id="authUsername" placeholder="落笔于此" maxlength="12" autocomplete="off">
+          </div>
+          <button class="jx-btn jx-enter" onclick="app.submitRegister()"><span>入 江 湖</span><i class="seal"></i></button>
+        </section>
       </div>
     </div>
 
-    <!-- ========== 江湖首页（今日修行入口） ========== -->
+    <!-- ========== 江湖首页 ========== -->
     <div class="view" id="view-home">
-      <div class="home-hero">
+      <div class="home-stage">
         <div class="home-time" id="homeTime"></div>
-        <div class="home-identity-name" id="homeIdentityName"></div>
-        <div class="home-char" id="homeChar"></div>
+        <div class="home-name" id="homeIdentityName"></div>
+        <div class="home-time" id="homeChar" style="margin-top:.4rem;"></div>
         <p class="home-greeting" id="homeGreeting"></p>
-        <button class="home-cultivate" id="homeActionBtn" onclick="app.startCultivation()">今 日 修 行</button>
-        <div class="home-mini-stats" id="homeMiniStats"></div>
+        <button class="jx-chapter" id="homeActionBtn" onclick="app.startCultivation()">
+          <i class="ch-mark"></i><span class="ch-text">今 日 修 行</span>
+        </button>
+        <div class="home-stats" id="homeMiniStats"></div>
       </div>
 
       <div class="home-switch">
@@ -89,21 +104,21 @@
 
     <!-- ========== 我的侠客 ========== -->
     <div class="view" id="view-knight">
-      <div class="panel">
-        <div class="knight-header">
-          <h2 class="view-title">我的侠客</h2>
-          <p id="knightPageSubtitle"></p>
-        </div>
-        <div class="stats-panel">
-          <div class="stats-panel-title">属性成长</div>
+      <div class="scroll-page">
+        <header class="page-head">
+          <h2 class="page-title" id="knightName">—</h2>
+          <p class="page-sub" id="knightPageSubtitle"></p>
+        </header>
+        <div class="sec-block">
+          <div class="sec-head">属性成长</div>
           <div id="knightStatsPanel"></div>
         </div>
-        <div class="stats-panel" style="margin-top:1.4rem;">
-          <div class="stats-panel-title">身份体验</div>
+        <div class="sec-block">
+          <div class="sec-head">身份体验</div>
           <div id="identityProgress"></div>
         </div>
-        <div class="history-panel">
-          <div class="stats-panel-title">江湖经历</div>
+        <div class="sec-block">
+          <div class="sec-head">江湖经历</div>
           <div id="knightHistory"></div>
         </div>
       </div>
@@ -116,29 +131,32 @@
         <h2 class="cult-title">今 日 修 行</h2>
         <div class="cult-identity" id="cultIdentity"></div>
       </div>
-      <div class="carrier" id="cultivationContent"><!-- JS 注入当日手札 --></div>
+      <div class="cult-timeline" id="cultTimeline"><!-- JS 注入五个章节印记 --></div>
+      <div class="cult-stage" id="cultivationContent"><!-- JS 注入当日手札 --></div>
     </div>
 
     <!-- ========== 个人界面 ========== -->
     <div class="view" id="view-profile">
-      <div class="panel">
-        <div class="profile-header">
-          <h2 class="view-title" id="profileName"></h2>
-          <p id="profileSub"></p>
-        </div>
+      <div class="scroll-page">
+        <header class="page-head">
+          <h2 class="page-title" id="profileName">—</h2>
+          <p class="page-sub" id="profileSub"></p>
+        </header>
 
-        <div class="stats-panel">
-          <div class="stats-panel-title">自创人设</div>
+        <div class="sec-block">
+          <div class="sec-head">自创人设</div>
           <div id="profilePersona"></div>
         </div>
 
-        <div class="stats-panel" style="margin-top:1.4rem;">
+        <div class="sec-block">
+          <div class="sec-head">身份</div>
           <div id="profileIdentity"></div>
         </div>
 
-        <div class="stats-panel" style="margin-top:1.4rem;">
-          <div class="stats-panel-title">藏书阁</div>
+        <div class="sec-block">
+          <div class="sec-head">藏书阁</div>
           <div class="library-tabs">
+            <span class="tab-ink" id="profileTabInk"></span>
             <button class="library-tab library-tab-profile active" data-tab="all" onclick="app.switchLibraryTab('all','profileLibraryGrid')">全部</button>
             <button class="library-tab library-tab-profile" data-tab="poetry" onclick="app.switchLibraryTab('poetry','profileLibraryGrid')">诗词</button>
             <button class="library-tab library-tab-profile" data-tab="wisdom" onclick="app.switchLibraryTab('wisdom','profileLibraryGrid')">典籍</button>
@@ -149,14 +167,15 @@
       </div>
     </div>
 
-    <!-- ========== 藏书阁（独立视图） ========== -->
+    <!-- ========== 藏书阁 ========== -->
     <div class="view" id="view-library">
-      <div class="panel">
-        <div class="library-header">
-          <h2 class="view-title">藏书阁</h2>
-          <p>收藏所学典籍、诗词与武学笔记</p>
-        </div>
+      <div class="scroll-page">
+        <header class="page-head">
+          <h2 class="page-title">藏书阁</h2>
+          <p class="page-sub">收藏所学典籍、诗词与武学笔记</p>
+        </header>
         <div class="library-tabs">
+          <span class="tab-ink" id="mainTabInk"></span>
           <button class="library-tab active" data-tab="all" onclick="app.switchLibraryTab('all')">全部</button>
           <button class="library-tab" data-tab="poetry" onclick="app.switchLibraryTab('poetry')">诗词</button>
           <button class="library-tab" data-tab="wisdom" onclick="app.switchLibraryTab('wisdom')">典籍</button>
@@ -168,18 +187,18 @@
 
   </div>
 
-  <!-- 底部导航 -->
+  <!-- 底部：极轻文字入口 -->
   <nav class="bottom-nav" id="bottomNav" style="display:none;">
-    <div class="nav-item active" data-view="home" onclick="app.switchView('home')">
+    <div class="nav-item active" data-view="home" onclick="app.go('home')">
       <span class="nav-icon">山</span><span class="nav-label">江湖</span>
     </div>
-    <div class="nav-item" data-view="knight" onclick="app.switchView('knight')">
+    <div class="nav-item" data-view="knight" onclick="app.go('knight')">
       <span class="nav-icon">侠</span><span class="nav-label">侠客</span>
     </div>
-    <div class="nav-item" data-view="cultivation" onclick="app.switchView('cultivation')">
+    <div class="nav-item" data-view="cultivation" onclick="app.go('cultivation')">
       <span class="nav-icon">修</span><span class="nav-label">修行</span>
     </div>
-    <div class="nav-item" data-view="profile" onclick="app.switchView('profile')">
+    <div class="nav-item" data-view="profile" onclick="app.go('profile')">
       <span class="nav-icon">印</span><span class="nav-label">个人</span>
     </div>
     <div class="nav-item nav-sound" id="navSound" onclick="app.toggleSound()" title="环境音">
@@ -187,21 +206,29 @@
     </div>
   </nav>
 
-  <!-- 人设编辑弹窗（仅文字，无画像上传） -->
+  <!-- 自创人设：宣纸题字 -->
   <div class="modal-mask" id="personaModal" style="display:none;">
     <div class="modal-box">
-      <h3 class="modal-title">自创人设</h3>
-      <input type="text" class="auth-input" id="personaName" placeholder="人设之名" maxlength="12">
-      <textarea class="auth-textarea" id="personaDesc" placeholder="述其人设：来历、性情人等" maxlength="200"></textarea>
-      <div id="personaPreview"></div>
-      <div style="margin-top:1rem; text-align:center; gap:.6rem; display:flex; justify-content:center;">
-        <button class="btn-primary" onclick="app.savePersona()">存</button>
-        <button class="btn-secondary" onclick="app.closePersonaModal()">取消</button>
+      <h3 class="modal-title">自 创 人 设</h3>
+      <div class="modal-field">
+        <span class="f-label">人 设 之 名</span>
+        <input type="text" class="jx-input" id="personaName" placeholder="落笔于此" maxlength="12" style="text-align:left;">
+      </div>
+      <div class="modal-field">
+        <span class="f-label">述 其 人 设</span>
+        <textarea class="auth-textarea" id="personaDesc" placeholder="来历、性情、行迹…" maxlength="200"></textarea>
+      </div>
+      <div class="modal-actions">
+        <button class="jx-confirm" id="personaSaveBtn" onclick="app.savePersona()"><span>落 印</span><i class="seal"></i></button>
+        <button class="jx-link" onclick="app.closePersonaModal()">取消</button>
       </div>
     </div>
   </div>
 
-  <!-- 载入淡入遮罩 -->
+  <!-- 水墨转场遮罩 -->
+  <div id="inkTransition" aria-hidden="true"></div>
+
+  <!-- 载入 -->
   <div id="enterVeil"></div>
 
   <!-- 点击反馈层 -->
@@ -210,10 +237,10 @@
   <!-- Toast -->
   <div class="toast" id="toast"></div>
 
-  <script src="js/images.js?v=5"></script>
-  <script src="js/data.js?v=5"></script>
-  <script src="js/data-relations.js?v=5"></script>
-  <script src="js/data-identity-cultivation.js?v=5"></script>
-  <script src="js/app.js?v=5"></script>
+  <script src="js/images.js?v=6"></script>
+  <script src="js/data.js?v=6"></script>
+  <script src="js/data-relations.js?v=6"></script>
+  <script src="js/data-identity-cultivation.js?v=6"></script>
+  <script src="js/app.js?v=6"></script>
 </body>
 </html>
