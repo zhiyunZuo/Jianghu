@@ -8,9 +8,21 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;500;700;900&family=Ma+Shan+Zheng&family=ZCOOL+XiaoWei&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/style.css?v=6">
+  <link rel="stylesheet" href="css/style.css?v=7">
 </head>
 <body data-identity="youxia" data-time="清晨" data-weather="mist">
+
+  <!-- ===== 共享水墨笔触滤镜（供七身份国画符号引用） ===== -->
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+    <filter id="inkRough" x="-25%" y="-25%" width="150%" height="150%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.013 0.02" numOctaves="2" seed="6" result="n"/>
+      <feDisplacementMap in="SourceGraphic" in2="n" scale="6" xChannelSelector="R" yChannelSelector="G"/>
+    </filter>
+    <radialGradient id="inkPool" cx="50%" cy="55%" r="58%">
+      <stop offset="0%" stop-color="#13171a" stop-opacity=".46"/>
+      <stop offset="100%" stop-color="#13171a" stop-opacity="0"/>
+    </radialGradient>
+  </defs></svg>
 
   <!-- ===== 背景层：宣纸 · 远山 · 雾气 · 纸纹 · 粒子 ===== -->
   <div id="bgStage" aria-hidden="true">
@@ -237,10 +249,10 @@
   <!-- Toast -->
   <div class="toast" id="toast"></div>
 
-  <script src="js/images.js?v=6"></script>
-  <script src="js/data.js?v=6"></script>
-  <script src="js/data-relations.js?v=6"></script>
-  <script src="js/data-identity-cultivation.js?v=6"></script>
-  <script src="js/app.js?v=6"></script>
+  <script src="js/images.js?v=7"></script>
+  <script src="js/data.js?v=7"></script>
+  <script src="js/data-relations.js?v=7"></script>
+  <script src="js/data-identity-cultivation.js?v=7"></script>
+  <script src="js/app.js?v=7"></script>
 </body>
 </html>
